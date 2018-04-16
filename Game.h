@@ -7,6 +7,8 @@
 #include "DeviceResources.h"
 #include "StepTimer.h"
 
+#include "DebugCamera.h"
+#include "GridFloor.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -55,6 +57,9 @@ private:
 	// キーボード
 	std::unique_ptr<DirectX::Keyboard> m_keyboard;
 
+	// マウス
+	std::unique_ptr<DirectX::Mouse> m_mouse;
+
 	// コモンステート
 	std::unique_ptr<DirectX::CommonStates> m_states;
 
@@ -69,4 +74,19 @@ private:
 
 	// スプライトの座標
 	DirectX::SimpleMath::Vector2 m_spritePosition;
+
+	// ワールド行列
+	DirectX::SimpleMath::Matrix m_world;
+
+	// ビュー行列
+	DirectX::SimpleMath::Matrix m_view;
+
+	// 射影行列
+	DirectX::SimpleMath::Matrix m_projection;
+
+	// デバッグカメラ
+	std::unique_ptr<DebugCamera> m_debugCamera;
+
+	// グリッドの床
+	std::unique_ptr<GridFloor> m_gridFloor;
 };

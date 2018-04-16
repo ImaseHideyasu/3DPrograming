@@ -5,6 +5,12 @@
 #include "pch.h"
 #include "Game.h"
 
+#if _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 extern void ExitGame();
 
 using namespace DirectX;
@@ -23,6 +29,13 @@ void Game::Initialize(HWND window, int width, int height)
 {
 	// キーボードの作成
 	m_keyboard = std::make_unique<Keyboard>();
+
+	// マウスの作成
+	m_mouse = std::make_unique<Mouse>();
+	m_mouse->SetWindow(window);
+
+	// デバッグカメラの作成
+	m_debugCamera = std::make_unique<DebugCamera>(width, height);
 
     m_deviceResources->SetWindow(window, width, height);
 
@@ -63,6 +76,9 @@ void Game::Update(DX::StepTimer const& timer)
     // TODO: Add your game logic here.
     elapsedTime;
 
+	// デバッグカメラの更新
+	m_debugCamera->Update(m_mouse.get());
+
 	Keyboard::State kb = m_keyboard->GetState();
 
 	// スペースキーが押されたら
@@ -91,6 +107,12 @@ void Game::Render()
     // TODO: Add your rendering code here.
     context;
 
+	// ビュー行列の作成
+	m_view = m_debugCamera->GetCameraMatrix();
+
+	// グリッドの床の描画
+	m_gridFloor->Render(context, m_view, m_projection);
+
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
 	m_sprites->Draw(m_texture.Get(), m_spritePosition);
@@ -116,7 +138,7 @@ void Game::Clear()
     auto renderTarget = m_deviceResources->GetRenderTargetView();
     auto depthStencil = m_deviceResources->GetDepthStencilView();
 
-    context->ClearRenderTargetView(renderTarget, Colors::CornflowerBlue);
+    context->ClearRenderTargetView(renderTarget, Colors::DarkBlue);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
 
@@ -192,12 +214,33 @@ void Game::CreateDeviceDependentResources()
 
 	// テクスチャのロード
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\image01.png", nullptr, m_texture.GetAddressOf());
+
+	// グリッドの床の作成
+	m_gridFloor = std::make_unique<GridFloor>(device, context, 10.0f, 10);
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
 void Game::CreateWindowSizeDependentResources()
 {
     // TODO: Initialize windows-size dependent objects here.
+
+	// ウインドウサイズからアスペクト比を算出する
+	RECT size = m_deviceResources->GetOutputSize();
+	float aspectRatio = float(size.right) / float(size.bottom);
+
+	// 画角を設定
+	float fovAngleY = XMConvertToRadians(70.0f);
+
+	// 射影行列を作成する
+	m_projection = Matrix::CreatePerspectiveFieldOfView(
+		fovAngleY,
+		aspectRatio,
+		0.01f,
+		100.0f
+	);
+
+	// デバッグカメラにウインドウのサイズ変更を伝える
+	m_debugCamera->SetWindowSize(size.right, size.bottom);
 }
 
 void Game::OnDeviceLost()
@@ -215,6 +258,9 @@ void Game::OnDeviceLost()
 
 	// テクスチャハンドルの解放
 	m_texture.Reset();
+
+	// グリッドの床の解放
+	m_gridFloor.reset();
 }
 
 void Game::OnDeviceRestored()

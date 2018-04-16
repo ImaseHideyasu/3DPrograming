@@ -42,13 +42,16 @@
 
 #include <stdio.h>
 
-#include <d3d11.h>
+#include <Keyboard.h>
+#include <Mouse.h>
 #include <SimpleMath.h>
 #include <CommonStates.h>
-#include <SpriteBatch.h>
 #include <WICTextureLoader.h>
+#include <SpriteBatch.h>
 #include <SpriteFont.h>
-#include <Keyboard.h>
+#include <Effects.h>
+#include <PrimitiveBatch.h>
+#include <VertexTypes.h>
 
 namespace DX
 {
