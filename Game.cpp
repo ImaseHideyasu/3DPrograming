@@ -1,4 +1,4 @@
-//
+﻿//
 // Game.cpp
 //
 
@@ -8,6 +8,7 @@
 extern void ExitGame();
 
 using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 using Microsoft::WRL::ComPtr;
 
@@ -75,6 +76,11 @@ void Game::Render()
 
     // TODO: Add your rendering code here.
     context;
+
+	// スプライトの描画
+	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
+	m_sprites->Draw(m_texture.Get(), Vector2(0.0f, 0.0f));
+	m_sprites->End();
 
     m_deviceResources->PIXEndEvent();
 
@@ -152,9 +158,19 @@ void Game::GetDefaultSize(int& width, int& height) const
 void Game::CreateDeviceDependentResources()
 {
     auto device = m_deviceResources->GetD3DDevice();
+	ID3D11DeviceContext* context =  m_deviceResources->GetD3DDeviceContext();
 
     // TODO: Initialize device dependent objects here (independent of window size).
     device;
+
+	// コモンステートの作成
+	m_states = std::make_unique<CommonStates>(device);
+
+	// スプライトバッチの作成
+	m_sprites = std::make_unique<SpriteBatch>(context);
+
+	// テクスチャのロード
+	CreateWICTextureFromFile(device, L"Resources\\Textures\\image01.png", nullptr, m_texture.GetAddressOf());
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -166,6 +182,15 @@ void Game::CreateWindowSizeDependentResources()
 void Game::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here.
+
+	// コモンステートの解放
+	m_states.reset();
+
+	// スプライトバッチの解放
+	m_sprites.reset();
+
+	// テクスチャハンドルの解放
+	m_texture.Reset();
 }
 
 void Game::OnDeviceRestored()

@@ -42,6 +42,12 @@
 
 #include <stdio.h>
 
+#include <d3d11.h>
+#include <SimpleMath.h>
+#include <CommonStates.h>
+#include <SpriteBatch.h>
+#include <WICTextureLoader.h>
+
 namespace DX
 {
     // Helper class for COM exceptions
