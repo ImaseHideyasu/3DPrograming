@@ -80,6 +80,10 @@ void Game::Render()
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
 	m_sprites->Draw(m_texture.Get(), Vector2(0.0f, 0.0f));
+	
+	// 文字列の描画
+	m_font->DrawString(m_sprites.get(), L"Font Test", Vector2(200.0f, 300.0f), Colors::Yellow);
+
 	m_sprites->End();
 
     m_deviceResources->PIXEndEvent();
@@ -169,6 +173,9 @@ void Game::CreateDeviceDependentResources()
 	// スプライトバッチの作成
 	m_sprites = std::make_unique<SpriteBatch>(context);
 
+	// スプライトフォントの作成
+	m_font = std::make_unique<SpriteFont>(device, L"SegoeUI_18.spritefont");
+
 	// テクスチャのロード
 	CreateWICTextureFromFile(device, L"Resources\\Textures\\image01.png", nullptr, m_texture.GetAddressOf());
 }
@@ -188,6 +195,9 @@ void Game::OnDeviceLost()
 
 	// スプライトバッチの解放
 	m_sprites.reset();
+
+	// スプライトフォントの解放
+	m_font.reset();
 
 	// テクスチャハンドルの解放
 	m_texture.Reset();

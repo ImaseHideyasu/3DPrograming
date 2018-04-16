@@ -7,6 +7,7 @@
 #include "DeviceResources.h"
 #include "StepTimer.h"
 
+
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
 class Game : public DX::IDeviceNotify
@@ -56,6 +57,9 @@ private:
 
 	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_sprites;
+
+	// スプライトフォント
+	std::unique_ptr<DirectX::SpriteFont> m_font;
 
 	// テクスチャハンドル
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;

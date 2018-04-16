@@ -47,6 +47,7 @@
 #include <CommonStates.h>
 #include <SpriteBatch.h>
 #include <WICTextureLoader.h>
+#include <SpriteFont.h>
 
 namespace DX
 {
