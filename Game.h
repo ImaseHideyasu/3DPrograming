@@ -52,6 +52,9 @@ private:
     // Rendering loop timer.
     DX::StepTimer                           m_timer;
 
+	// キーボード
+	std::unique_ptr<DirectX::Keyboard> m_keyboard;
+
 	// コモンステート
 	std::unique_ptr<DirectX::CommonStates> m_states;
 
@@ -64,4 +67,6 @@ private:
 	// テクスチャハンドル
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_texture;
 
+	// スプライトの座標
+	DirectX::SimpleMath::Vector2 m_spritePosition;
 };

@@ -48,6 +48,7 @@
 #include <SpriteBatch.h>
 #include <WICTextureLoader.h>
 #include <SpriteFont.h>
+#include <Keyboard.h>
 
 namespace DX
 {

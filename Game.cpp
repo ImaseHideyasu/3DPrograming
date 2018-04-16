@@ -21,6 +21,9 @@ Game::Game()
 // Initialize the Direct3D resources required to run.
 void Game::Initialize(HWND window, int width, int height)
 {
+	// キーボードの作成
+	m_keyboard = std::make_unique<Keyboard>();
+
     m_deviceResources->SetWindow(window, width, height);
 
     m_deviceResources->CreateDeviceResources();
@@ -35,6 +38,9 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetFixedTimeStep(true);
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
+
+	// スプライトの位置の初期化
+	m_spritePosition = Vector2(0.0f, 0.0f);
 }
 
 #pragma region Frame Update
@@ -56,6 +62,14 @@ void Game::Update(DX::StepTimer const& timer)
 
     // TODO: Add your game logic here.
     elapsedTime;
+
+	Keyboard::State kb = m_keyboard->GetState();
+
+	// スペースキーが押されたら
+	if (kb.Space)
+	{
+		m_spritePosition.x++;
+	}
 }
 #pragma endregion
 
@@ -79,7 +93,7 @@ void Game::Render()
 
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
-	m_sprites->Draw(m_texture.Get(), Vector2(0.0f, 0.0f));
+	m_sprites->Draw(m_texture.Get(), m_spritePosition);
 	
 	// 文字列の描画
 	m_font->DrawString(m_sprites.get(), L"Font Test", Vector2(200.0f, 300.0f), Colors::Yellow);
