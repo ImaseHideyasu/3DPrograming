@@ -93,19 +93,19 @@ void Game::Update(DX::StepTimer const& timer)
 // Draws the scene.
 void Game::Render()
 {
-    // Don't try to render anything before the first Update.
-    if (m_timer.GetFrameCount() == 0)
-    {
-        return;
-    }
+	// Don't try to render anything before the first Update.
+	if (m_timer.GetFrameCount() == 0)
+	{
+		return;
+	}
 
-    Clear();
+	Clear();
 
-    m_deviceResources->PIXBeginEvent(L"Render");
-    auto context = m_deviceResources->GetD3DDeviceContext();
+	m_deviceResources->PIXBeginEvent(L"Render");
+	auto context = m_deviceResources->GetD3DDeviceContext();
 
-    // TODO: Add your rendering code here.
-    context;
+	// TODO: Add your rendering code here.
+	context;
 
 	// ビュー行列の作成
 	m_view = m_debugCamera->GetCameraMatrix();
@@ -116,11 +116,19 @@ void Game::Render()
 	// スプライトの描画
 	m_sprites->Begin(SpriteSortMode_Deferred, m_states->NonPremultiplied());
 	m_sprites->Draw(m_texture.Get(), m_spritePosition);
-	
+
 	// 文字列の描画
 	m_font->DrawString(m_sprites.get(), L"Font Test", Vector2(200.0f, 300.0f), Colors::Yellow);
 
 	m_sprites->End();
+
+	Matrix world;
+
+	// ３Ｄスプライトの描画
+	world = Matrix::CreateConstrainedBillboard(Vector3(0.0f, 0.0f, 0.0f), m_debugCamera->GetEyePosition(), Vector3(0.0f, 1.0f, 0.0f));
+	m_sprite3D->Draw(m_texture.Get(), world, m_view, m_projection);
+	world = Matrix::CreateConstrainedBillboard(Vector3(2.0f, 0.0f, 0.0f), m_debugCamera->GetEyePosition(), Vector3(0.0f, 1.0f, 0.0f));
+	m_sprite3D->Draw(m_texture.Get(), world, m_view, m_projection);
 
     m_deviceResources->PIXEndEvent();
 
@@ -197,7 +205,7 @@ void Game::GetDefaultSize(int& width, int& height) const
 // These are the resources that depend on the device.
 void Game::CreateDeviceDependentResources()
 {
-    auto device = m_deviceResources->GetD3DDevice();
+    ID3D11Device* device = m_deviceResources->GetD3DDevice();
 	ID3D11DeviceContext* context =  m_deviceResources->GetD3DDeviceContext();
 
     // TODO: Initialize device dependent objects here (independent of window size).
@@ -217,6 +225,10 @@ void Game::CreateDeviceDependentResources()
 
 	// グリッドの床の作成
 	m_gridFloor = std::make_unique<GridFloor>(device, context, 10.0f, 10);
+
+	// スプライト３Ｄの作成
+	m_sprite3D = std::make_unique<Sprite3D>(device, context, m_states.get(), Vector2(1.0f, 1.0f), Vector2(0.5f, 1.0f));
+
 }
 
 // Allocate all memory resources that change on a window SizeChanged event.
@@ -261,6 +273,10 @@ void Game::OnDeviceLost()
 
 	// グリッドの床の解放
 	m_gridFloor.reset();
+
+	// スプライト３Ｄの解放
+	m_sprite3D.reset();
+
 }
 
 void Game::OnDeviceRestored()

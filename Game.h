@@ -9,6 +9,7 @@
 
 #include "DebugCamera.h"
 #include "GridFloor.h"
+#include "Sprite3D.h"
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -89,4 +90,8 @@ private:
 
 	// グリッドの床
 	std::unique_ptr<GridFloor> m_gridFloor;
+
+	// ３Ｄスプライト
+	std::unique_ptr<Sprite3D> m_sprite3D;
+
 };

@@ -20,6 +20,7 @@
     </ClInclude>
     <ClInclude Include="DebugCamera.h" />
     <ClInclude Include="GridFloor.h" />
+    <ClInclude Include="Sprite3D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -30,6 +31,7 @@
     </ClCompile>
     <ClCompile Include="DebugCamera.cpp" />
     <ClCompile Include="GridFloor.cpp" />
+    <ClCompile Include="Sprite3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
